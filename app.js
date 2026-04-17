@@ -478,6 +478,34 @@ planillaFilter.addEventListener('change', searchPeople);
 limitSel.addEventListener('change', searchPeople);
 btnReload.addEventListener('click', () => location.reload());
 
+/* ── Hamburger menu ── */
+const btnHamburger  = document.getElementById('btnHamburger');
+const headerActions = document.getElementById('headerActions');
+
+btnHamburger.addEventListener('click', () => {
+  const isOpen = headerActions.classList.toggle('open');
+  btnHamburger.classList.toggle('open', isOpen);
+  btnHamburger.setAttribute('aria-expanded', isOpen);
+});
+
+/* cerrar menú al hacer click fuera del header */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.site-header')) {
+    headerActions.classList.remove('open');
+    btnHamburger.classList.remove('open');
+    btnHamburger.setAttribute('aria-expanded', 'false');
+  }
+});
+
+/* cerrar menú al ejecutar cualquier acción */
+headerActions.addEventListener('click', e => {
+  if (e.target.tagName === 'BUTTON') {
+    headerActions.classList.remove('open');
+    btnHamburger.classList.remove('open');
+    btnHamburger.setAttribute('aria-expanded', 'false');
+  }
+});
+
 /* ══════════════════════════════════
    MODAL CARGAR PLANTILLA
 ══════════════════════════════════ */

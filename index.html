@@ -15,19 +15,27 @@
   <header class="site-header">
     <div class="header-inner">
 
-      <div class="brand">
-        <div class="header-logos">
-          <img src="logo-bateas.png" alt="Bateas" />
-          <img src="logo-dho.png"    alt="DHO" />
+      <div class="header-top-row">
+        <div class="brand">
+          <div class="header-logos">
+            <img src="logo-bateas.png" alt="Bateas" />
+            <img src="logo-dho.png"    alt="DHO" />
+          </div>
+          <div class="brand-divider"></div>
+          <div class="brand-text">
+            <h1>Confirmación de entrega</h1>
+            <p>Entrega de cumpleaños</p>
+          </div>
         </div>
-        <div class="brand-divider"></div>
-        <div class="brand-text">
-          <h1>Confirmación de entrega</h1>
-          <p>Entrega de cumpleaños</p>
-        </div>
+
+        <button class="hamburger" id="btnHamburger" aria-label="Menú" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
 
-      <div class="header-actions">
+      <div class="header-actions" id="headerActions">
         <button id="btnOpenUpload">Cargar Plantilla</button>
         <button id="btnExportXlsx">Excel (.xlsx)</button>
         <button id="btnReload">Recargar</button>
