@@ -199,7 +199,8 @@ function renderHistory() {
     const nombre  = p ? p.apellidos_nombres : '-';
     const planilla = p ? p.planilla : '-';
     const sede    = p ? p.sede : '-';
-    const tallas  = p ? p.tallas : '-';
+    const tallas     = p ? p.tallas : '-';
+    const cumpleanos = p ? (p.cumpleanos || '-') : '-';
     return `
       <tr>
         <td class="mono">${escapeHtml(formatLocal(e.timestamp))}</td>
@@ -208,6 +209,7 @@ function renderHistory() {
         <td>${escapeHtml(planilla)}</td>
         <td>${escapeHtml(sede)}</td>
         <td class="mono">${escapeHtml(tallas)}</td>
+        <td class="mono">${escapeHtml(cumpleanos)}</td>
         <td><b>${escapeHtml(e.item || '-')}</b></td>
         <td style="white-space:nowrap; display:flex; gap:4px;">
           ${e.firma ? `<button class="btn" data-firma="${escapeHtml(e.dni)}" title="Ver firma">✍</button>` : ''}
