@@ -48,95 +48,103 @@
        CONTENIDO PRINCIPAL
   ══════════════════════════════════ -->
   <main class="wrap">
-    <div class="grid">
 
-      <!-- Pendientes -->
-      <section class="card">
-        <div class="cardhead">
-          <h2>Pendientes</h2>
-          <div class="meta" id="peopleMeta">0</div>
+    <!-- Pendientes -->
+    <section class="card">
+      <div class="cardhead">
+        <h2>Pendientes</h2>
+        <div class="meta" id="peopleMeta">0</div>
+      </div>
+
+      <label for="q">Buscar (DNI / apellidos y nombres)</label>
+      <input id="q" placeholder="Ej: 73451234 / García López..." />
+
+      <div class="filters-grid">
+        <select id="sedeFilter">
+          <option value="">Todas las sedes</option>
+        </select>
+        <select id="planillaFilter">
+          <option value="">Todas las planillas</option>
+        </select>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+        <select id="limit" style="width:80px;">
+          <option value="15">15</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+
+      <div class="results">
+        <div class="list" id="results"></div>
+      </div>
+
+      <div class="toast" id="toast"></div>
+    </section>
+
+    <!-- Historial -->
+    <section class="card" style="margin-top:18px;">
+      <div class="cardhead">
+        <h2>Historial de entregas</h2>
+        <div class="meta" id="delMeta">0 entregas</div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>DNI</th>
+              <th>Apellidos y Nombres</th>
+              <th>Planilla</th>
+              <th>Sede</th>
+              <th>Talla</th>
+              <th>Ítem</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="hist"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════
+       MODAL: Confirmar Entrega
+  ══════════════════════════════════ -->
+  <div id="modalConfirm" class="modal-overlay">
+    <div class="modal-box">
+
+      <div class="modal-head">
+        <h2>Confirmar entrega</h2>
+        <button class="btn" id="btnCloseModalConfirm" style="padding:6px 10px;">&#10005;</button>
+      </div>
+
+      <div id="selectedPill" class="pill" style="display:none"></div>
+      <div id="selectedHint" style="font-size:12px; color:var(--muted); margin-top:6px;">
+        Selecciona una persona.
+      </div>
+
+      <label style="margin-top:14px;">Firma del receptor</label>
+      <div class="sig-wrap" id="sigWrap">
+        <canvas id="sigCanvas"></canvas>
+        <span class="sig-hint" id="sigHint">Firme aquí</span>
+        <div class="sig-actions">
+          <button class="btn" id="btnClearSig" style="padding:4px 10px; font-size:11px;">
+            Borrar firma
+          </button>
         </div>
+      </div>
 
-        <label for="q">Buscar (DNI / apellidos y nombres)</label>
-        <input id="q" placeholder="Ej: 73451234 / García López..." />
-
-        <div class="filters-grid">
-          <select id="sedeFilter">
-            <option value="">Todas las sedes</option>
-          </select>
-          <select id="planillaFilter">
-            <option value="">Todas las planillas</option>
-          </select>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-          <select id="limit" style="width:80px;">
-            <option value="15">15</option>
-            <option value="25" selected>25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-
-        <div class="results">
-          <div class="list" id="results"></div>
-        </div>
-
-        <div class="toast" id="toast"></div>
-      </section>
-
-      <!-- Confirmar entrega + Historial -->
-      <section class="card">
-        <div class="cardhead">
-          <h2>Confirmar entrega</h2>
-          <div class="meta" id="delMeta">0 entregas</div>
-        </div>
-
-        <div id="selectedPill" class="pill" style="display:none"></div>
-        <div id="selectedHint" style="font-size:12px; color:var(--muted); margin-top:6px;">
-          Selecciona una persona.
-        </div>
-
-        <label for="item" style="margin-top:14px;">Ítem</label>
-        <input id="item" placeholder="Ej: Código de entrega" disabled />
-
-        <label style="margin-top:10px;">Firma del receptor</label>
-        <div class="sig-wrap" id="sigWrap">
-          <canvas id="sigCanvas"></canvas>
-          <span class="sig-hint" id="sigHint">Firme aquí</span>
-          <div class="sig-actions">
-            <button class="btn" id="btnClearSig" style="padding:4px 10px; font-size:11px;">
-              Borrar firma
-            </button>
-          </div>
-        </div>
-
-        <div class="confirm-actions">
-          <button class="btn primary" id="btnConfirm" disabled>Confirmar Entrega</button>
-          <button class="btn"         id="btnClearSel" disabled>Limpiar selección</button>
-        </div>
-
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>DNI</th>
-                <th>Apellidos y Nombres</th>
-                <th>Planilla</th>
-                <th>Sede</th>
-                <th>Talla</th>
-                <th>Ítem</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="hist"></tbody>
-          </table>
-        </div>
-      </section>
+      <div class="confirm-actions" style="margin-top:14px;">
+        <button class="btn primary" id="btnConfirm">Confirmar Entrega</button>
+        <button class="btn"         id="btnClearSel">Cancelar</button>
+      </div>
 
     </div>
-  </main>
+  </div>
 
   <!-- ══════════════════════════════════
        MODAL: Cargar Plantilla
@@ -196,6 +204,12 @@
       <!-- Opciones -->
       <div id="uploadOptions" style="display:none; border-top:1px solid var(--border); padding-top:12px; margin-bottom:16px;">
         <div class="opt-row">
+          <input type="checkbox" id="mergeOpt" checked />
+          <label for="mergeOpt">
+            <b>Agregar / fusionar</b> — solo agrega registros nuevos y actualiza los existentes sin borrar ninguno
+          </label>
+        </div>
+        <div class="opt-row" style="margin-top:6px;">
           <input type="checkbox" id="clearEntregasOpt" />
           <label for="clearEntregasOpt">
             Limpiar también <b>/Entregas</b> (inicio de campaña nueva)

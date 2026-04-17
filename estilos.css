@@ -66,9 +66,9 @@ button {
 }
 
 .wrap {
-  width: min(100%, 1200px);
+  width: min(100%, 860px);
   margin: 0 auto;
-  padding: 24px 16px 28px;
+  padding: 24px 16px 32px;
   flex: 1;
 }
 
@@ -354,13 +354,6 @@ input::placeholder {
 /* ══════════════════════════════════
    LAYOUT
 ══════════════════════════════════ */
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 18px;
-  align-items: start;
-}
-
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -789,10 +782,6 @@ footer span {
    BREAKPOINTS
 ══════════════════════════════════ */
 @media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
   .tablewrap {
     max-height: 320px;
   }

@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getDatabase, ref, onValue, set, remove } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
+import { getDatabase, ref, onValue, set, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 /* ── Firebase ── */
 const firebaseConfig = {
@@ -26,7 +26,8 @@ const results        = document.getElementById('results');
 const toast          = document.getElementById('toast');
 const selectedPill   = document.getElementById('selectedPill');
 const selectedHint   = document.getElementById('selectedHint');
-const item           = document.getElementById('item');
+const modalConfirm        = document.getElementById('modalConfirm');
+const btnCloseModalConfirm = document.getElementById('btnCloseModalConfirm');
 const btnConfirm     = document.getElementById('btnConfirm');
 const btnClearSel    = document.getElementById('btnClearSel');
 const hist           = document.getElementById('hist');
@@ -63,6 +64,19 @@ function formatLocal(iso) {
   return new Date(iso).toLocaleString();
 }
 
+function excelDateToStr(val) {
+  if (!val) return '';
+  const n = Number(val);
+  if (!isNaN(n) && n > 1000) {
+    const d = new Date(Date.UTC(1900, 0, 1) + (n - 2) * 86400000);
+    const dd = String(d.getUTCDate()).padStart(2, '0');
+    const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const yyyy = d.getUTCFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
+  return String(val).trim();
+}
+
 /* ══════════════════════════════════
    DATOS
 ══════════════════════════════════ */
@@ -72,8 +86,9 @@ function normalizePerson(dni, obj) {
     apellidos_nombres: (obj?.APELLIDOS_NOMBRES ?? obj?.apellidos_nombres ?? obj?.Apellidos_Nombres ?? '').toString().trim(),
     planilla:          (obj?.PLANILLA  ?? obj?.planilla  ?? obj?.Planilla  ?? '').toString().trim(),
     sexo:              (obj?.SEXO      ?? obj?.sexo      ?? obj?.Sexo      ?? '').toString().trim(),
-    tallas:            (obj?.TALLAS    ?? obj?.tallas    ?? obj?.Tallas    ?? '').toString().trim(),
-    sede:              (obj?.SEDE      ?? obj?.sede      ?? obj?.Sede      ?? '').toString().trim(),
+    tallas:            (obj?.TALLAS      ?? obj?.tallas      ?? obj?.Tallas      ?? '').toString().trim(),
+    sede:              (obj?.SEDE        ?? obj?.sede        ?? obj?.Sede        ?? '').toString().trim(),
+    cumpleanos:        excelDateToStr(obj?.CUMPLEANOS  ?? obj?.cumpleanos  ?? obj?.CUMPLEAÑOS  ?? obj?.cumpleaños  ?? ''),
   };
 }
 
@@ -122,19 +137,20 @@ function refreshMeta() {
   delMeta.textContent    = `${Object.keys(entregas || {}).filter(d => entregas[d]?.entregado).length} entregas`;
 }
 
+function openModalConfirm() { modalConfirm.classList.add('open'); }
+function closeModalConfirm() {
+  modalConfirm.classList.remove('open');
+  selected = null;
+  clearSigCanvas();
+  selectedPill.style.display = 'none';
+}
+
 function setSelected(p) {
   selected = p || null;
-  if (!selected) {
-    selectedPill.style.display = 'none';
-    selectedHint.textContent   = 'Selecciona una persona.';
-    item.value    = '';
-    item.disabled = true;
-    btnConfirm.disabled  = true;
-    btnClearSel.disabled = true;
-    return;
-  }
+  if (!selected) { closeModalConfirm(); return; }
+
   selectedPill.style.display = 'flex';
-  selectedHint.textContent   = 'Agrega ítem y confirma.';
+  selectedHint.textContent   = 'Confirma la entrega.';
   selectedPill.innerHTML = `
     <span class="chip">DNI</span> <b>${escapeHtml(selected.dni)}</b>
     <span class="chip">NOMBRE</span> <b>${escapeHtml(selected.apellidos_nombres)}</b>
@@ -142,10 +158,7 @@ function setSelected(p) {
     <span class="chip">SEDE</span> <b>${escapeHtml(selected.sede)}</b>
     <span class="chip">TALLA</span> <b>${escapeHtml(selected.tallas)}</b>
   `;
-  item.disabled = false;
-  btnConfirm.disabled  = false;
-  btnClearSel.disabled = false;
-  item.focus();
+  openModalConfirm();
 }
 
 function searchPeople() {
@@ -155,7 +168,7 @@ function searchPeople() {
     <div class="rowitem">
       <div class="who">
         <strong>${escapeHtml(p.apellidos_nombres || '(sin nombre)')}</strong>
-        <span>${escapeHtml(p.planilla || '-')} &middot; Sede: ${escapeHtml(p.sede || '-')} &middot; Talla: ${escapeHtml(p.tallas || '-')}</span>
+        <span>${escapeHtml(p.planilla || '-')} &middot; Sede: ${escapeHtml(p.sede || '-')} &middot; Talla: ${escapeHtml(p.tallas || '-')}${p.cumpleanos ? ' &middot; 🎂 ' + escapeHtml(p.cumpleanos) : ''}</span>
       </div>
       <div style="display:flex; gap:10px; align-items:center">
         <span class="mono">${escapeHtml(p.dni)}</span>
@@ -245,12 +258,9 @@ btnConfirm.addEventListener('click', async () => {
     await set(ref(db, `Entregas/${selected.dni}`), {
       entregado: true,
       timestamp: new Date().toISOString(),
-      item:  item.value.trim() || '',
       firma: firmaCode || null,
     });
-    item.value = '';
-    clearSigCanvas();
-    setSelected(null);
+    closeModalConfirm();
     showToast('Entrega confirmada ✅');
   } catch (err) {
     console.error(err);
@@ -262,7 +272,9 @@ btnConfirm.addEventListener('click', async () => {
   }
 });
 
-btnClearSel.addEventListener('click', () => setSelected(null));
+btnClearSel.addEventListener('click', closeModalConfirm);
+btnCloseModalConfirm.addEventListener('click', closeModalConfirm);
+modalConfirm.addEventListener('click', e => { if (e.target === modalConfirm) closeModalConfirm(); });
 
 /* ══════════════════════════════════
    EXPORTAR EXCEL
@@ -527,6 +539,7 @@ const previewHead      = document.getElementById('previewHead');
 const previewBody      = document.getElementById('previewBody');
 const uploadOptions    = document.getElementById('uploadOptions');
 const clearEntregasOpt = document.getElementById('clearEntregasOpt');
+const mergeOpt         = document.getElementById('mergeOpt');
 const btnUpload        = document.getElementById('btnUpload');
 const uploadStatus     = document.getElementById('uploadStatus');
 
@@ -548,6 +561,7 @@ function resetModal() {
   btnUpload.disabled            = true;
   uploadStatus.textContent      = '';
   clearEntregasOpt.checked      = false;
+  mergeOpt.checked              = true;
 }
 
 btnOpenUpload.addEventListener('click', () => {
@@ -597,6 +611,7 @@ function rowsToPersons(rows) {
   const sexoCol = findCol(keys, 'SEXO', 'Sexo', 'GENERO', 'GÉNERO');
   const tallCol = findCol(keys, 'TALLAS', 'Tallas', 'TALLA', 'TALLA_POLO', 'POLO');
   const sedeCol = findCol(keys, 'SEDE', 'Sede', 'AREA', 'ÁREA', 'OFICINA', 'LUGAR');
+  const cumCol  = findCol(keys, 'CUMPLEAÑOS', 'CUMPLEANOS', 'CUMPLE', 'FECHA_CUMPLE', 'FECHA_NACIMIENTO', 'NACIMIENTO', 'FEC_NAC', 'FECHA NAC', 'BIRTHDAY');
 
   return rows
     .map(r => ({
@@ -606,6 +621,7 @@ function rowsToPersons(rows) {
       sexo:              String(r[sexoCol] ?? '').trim(),
       tallas:            String(r[tallCol] ?? '').trim(),
       sede:              String(r[sedeCol] ?? '').trim(),
+      cumpleanos:        excelDateToStr(r[cumCol] ?? ''),
     }))
     .filter(r => r.dni);
 }
@@ -651,11 +667,14 @@ async function processFile(file) {
       const text = await file.text();
       persons    = parseJsonToPersons(text);
     } else {
-      const buffer = await file.arrayBuffer();
-      const wb     = XLSX.read(buffer, { type: 'array' });
-      const ws     = wb.Sheets[wb.SheetNames[0]];
-      const rows   = XLSX.utils.sheet_to_json(ws, { defval: '' });
-      persons      = rowsToPersons(rows);
+      const buffer   = await file.arrayBuffer();
+      const wb       = XLSX.read(buffer, { type: 'array' });
+      const sheetName = wb.SheetNames.find(n => n.trim().toLowerCase() === 'data') ?? wb.SheetNames[0];
+      const ws       = wb.Sheets[sheetName];
+      const rows     = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      persons        = rowsToPersons(rows);
+      uploadStatus.textContent = `Hoja leída: "${sheetName}"`;
+      await new Promise(r => setTimeout(r, 600));
     }
 
     if (!persons.length) {
@@ -674,8 +693,11 @@ async function processFile(file) {
 }
 
 function renderPreview(persons) {
-  const sample = persons.slice(0, 8);
-  previewHead.innerHTML = '<th>DNI</th><th>Apellidos y Nombres</th><th>Planilla</th><th>Sexo</th><th>Tallas</th><th>Sede</th>';
+  const hasCumple = persons.some(p => p.cumpleanos);
+  const sample    = persons.slice(0, 8);
+  previewHead.innerHTML =
+    '<th>DNI</th><th>Apellidos y Nombres</th><th>Planilla</th><th>Sexo</th><th>Tallas</th><th>Sede</th>' +
+    (hasCumple ? '<th>Cumpleaños</th>' : '');
   previewBody.innerHTML = sample.map(p => `
     <tr>
       <td class="mono">${escapeHtml(p.dni)}</td>
@@ -684,6 +706,7 @@ function renderPreview(persons) {
       <td>${escapeHtml(p.sexo)}</td>
       <td>${escapeHtml(p.tallas)}</td>
       <td>${escapeHtml(p.sede)}</td>
+      ${hasCumple ? `<td class="mono">${escapeHtml(p.cumpleanos)}</td>` : ''}
     </tr>
   `).join('');
 
@@ -709,15 +732,22 @@ btnUpload.addEventListener('click', async () => {
   try {
     const obj = {};
     for (const p of parsedUploadData) {
-      obj[p.dni] = {
+      const record = {
         APELLIDOS_NOMBRES: p.apellidos_nombres,
         PLANILLA:          p.planilla,
         SEXO:              p.sexo,
         TALLAS:            p.tallas,
         SEDE:              p.sede,
       };
+      if (p.cumpleanos) record.CUMPLEANOS = p.cumpleanos;
+      obj[p.dni] = record;
     }
-    await set(ref(db, nodeName), obj);
+
+    if (mergeOpt.checked) {
+      await update(ref(db, nodeName), obj);
+    } else {
+      await set(ref(db, nodeName), obj);
+    }
     if (clearEntr) await remove(ref(db, 'Entregas'));
 
     uploadStatus.textContent = `✅ ${parsedUploadData.length} registros cargados en /${nodeName}.`;
