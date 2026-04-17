@@ -1,396 +1,47 @@
-
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Confirmación de Entrega · Cumpleaños</title>
-
-  <style>
-    :root {
-      --bg: #f8f9fa;
-      --panel: #ffffff;
-      --panel2: #f4f5f7;
-      --border: rgba(15, 23, 42, .09);
-      --text: #0f172a;
-      --muted: #64748b;
-      --accent: #2563eb;
-      --danger: #e11d48;
-      --ok: #059669;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--sans);
-      color: var(--text);
-      background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 18px; flex: 1; }
-
-    /* Header */
-    .top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-    .brand h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .1px; }
-    .brand p  { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
-    .actions  { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-
-    /* Buttons */
-    .btn {
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 13px;
-      letter-spacing: .1px;
-      transition: background .15s;
-      user-select: none;
-    }
-    .btn:hover { background: var(--panel2); }
-    .btn.primary {
-      border: none;
-      color: #fff;
-      background: var(--accent);
-    }
-    .btn.primary:hover { background: #1d4ed8; }
-    .btn.danger {
-      background: transparent;
-      border-color: rgba(225, 29, 72, .25);
-      color: #be123c;
-    }
-    .btn.danger:hover { background: rgba(225, 29, 72, .06); }
-    .btn.ok {
-      background: transparent;
-      border-color: rgba(5, 150, 105, .25);
-      color: #047857;
-    }
-    .btn.ok:hover { background: rgba(5, 150, 105, .06); }
-    .btn:disabled { opacity: .5; cursor: not-allowed; }
-
-    /* Inputs */
-    input, select {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      outline: none;
-      font-size: 13px;
-    }
-    input:focus, select:focus { border-color: rgba(37, 99, 235, .4); }
-    input::placeholder { color: rgba(100, 116, 139, .65); }
-
-    /* Layout */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1.05fr;
-      gap: 16px;
-    }
-    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .cardhead {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .cardhead h2 { margin: 0; font-size: 13px; font-weight: 600; }
-    .meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
-    label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 5px; }
-
-    /* Filter row */
-    .filter-row {
-      display: grid;
-      grid-template-columns: 1fr 140px;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    /* Results list */
-    .results { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .list { max-height: 400px; overflow: auto; }
-    .rowitem {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
-      border-top: 1px solid var(--border);
-      background: var(--panel);
-    }
-    .rowitem:first-child { border-top: none; }
-    .rowitem:hover { background: var(--panel2); }
-    .who { min-width: 0; }
-    .who strong { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .who span   { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-    .mono { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
-
-    /* Selection pill */
-    .pill {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      padding: 9px 11px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--panel2);
-      margin-top: 8px;
-      align-items: center;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .chip {
-      padding: 3px 7px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11px;
-    }
-    .pill b { color: var(--text); }
-
-    /* Confirm actions */
-    .confirm-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    /* Toast */
-    .toast {
-      margin-top: 10px;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--panel2);
-      color: var(--muted);
-      font-size: 12px;
-      display: none;
-      white-space: pre-line;
-    }
-
-    /* Table */
-    .tablewrap { max-height: 380px; overflow: auto; border-radius: 8px; margin-top: 12px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; background: var(--panel); }
-    th, td {
-      padding: 9px 10px;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      text-align: left;
-      vertical-align: top;
-    }
-    thead tr th { border-top: none; }
-    th { background: var(--panel2); color: var(--muted); font-weight: 600; }
-
-    /* Header logos */
-    .header-logos {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .header-logos img {
-      height: 36px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    /* Firma */
-    .sig-wrap {
-      margin-top: 10px;
-      border: 1.5px dashed var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: #fafbfc;
-      position: relative;
-    }
-    .sig-wrap canvas {
-      display: block;
-      width: 100%;
-      height: 130px;
-      cursor: crosshair;
-      touch-action: none;
-    }
-    .sig-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-      padding: 5px 8px;
-      border-top: 1px solid var(--border);
-      background: var(--panel2);
-    }
-    .sig-hint {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 12px;
-      color: rgba(100,116,139,.45);
-      pointer-events: none;
-      user-select: none;
-    }
-    /* Modal firma */
-    .modal-sig-box {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      max-width: 480px;
-      width: 100%;
-    }
-    .modal-sig-box canvas {
-      width: 100%;
-      height: 180px;
-      display: block;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #fafbfc;
-    }
-
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    /* ── Modal Cargar Plantilla ── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, .52);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px;
-      max-width: 700px;
-      width: 100%;
-      max-height: 92vh;
-      overflow: auto;
-    }
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-    .modal-head h2 { margin: 0; font-size: 14px; font-weight: 600; }
-    .step-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      margin-right: 5px;
-      flex-shrink: 0;
-    }
-    .upload-drop {
-      border: 2px dashed var(--border);
-      border-radius: 10px;
-      padding: 26px;
-      text-align: center;
-      cursor: pointer;
-      background: var(--panel2);
-      transition: border-color .15s, background .15s;
-      margin-top: 6px;
-    }
-    .upload-drop:hover, .upload-drop.over {
-      border-color: var(--accent);
-      background: rgba(37, 99, 235, .04);
-    }
-    .upload-drop input[type=file] { display: none; }
-    .upload-drop .di { font-size: 26px; margin-bottom: 6px; }
-    .upload-drop p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
-    .upload-drop strong { font-size: 13px; }
-    .preview-wrap {
-      max-height: 220px;
-      overflow: auto;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-top: 8px;
-    }
-    .opt-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      padding: 10px 0 0;
-    }
-    .opt-row input[type=checkbox] {
-      width: 16px; height: 16px;
-      cursor: pointer;
-      accent-color: var(--danger);
-      flex-shrink: 0;
-    }
-    .opt-row label { margin: 0; color: var(--text); cursor: pointer; }
-    .upload-status { font-size: 12px; color: var(--muted); margin-top: 8px; min-height: 18px; }
-  </style>
+  <link rel="stylesheet" href="estilos.css" />
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="top">
+
+  <!-- ══════════════════════════════════
+       HEADER
+  ══════════════════════════════════ -->
+  <header class="site-header">
+    <div class="header-inner">
+
       <div class="brand">
-        <h1>Confirmación de entrega</h1>
-        <p>Entrega de cumpleaños</p>
-      </div>
-      <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
         <div class="header-logos">
           <img src="logo-bateas.png" alt="Bateas" />
           <img src="logo-dho.png"    alt="DHO" />
         </div>
-        <div class="actions">
-          <button class="btn primary" id="btnOpenUpload">Cargar Plantilla</button>
-          <button class="btn ok"      id="btnExportXlsx">Excel (.xlsx)</button>
-          <button class="btn danger"  id="btnReload">Recargar</button>
+        <div class="brand-divider"></div>
+        <div class="brand-text">
+          <h1>Confirmación de entrega</h1>
+          <p>Entrega de cumpleaños</p>
         </div>
       </div>
-    </div>
 
+      <div class="header-actions">
+        <button id="btnOpenUpload">Cargar Plantilla</button>
+        <button id="btnExportXlsx">Excel (.xlsx)</button>
+        <button id="btnReload">Recargar</button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════
+       CONTENIDO PRINCIPAL
+  ══════════════════════════════════ -->
+  <main class="wrap">
     <div class="grid">
+
       <!-- Pendientes -->
       <section class="card">
         <div class="cardhead">
@@ -398,10 +49,10 @@
           <div class="meta" id="peopleMeta">0</div>
         </div>
 
-        <label>Buscar (DNI / apellidos y nombres)</label>
+        <label for="q">Buscar (DNI / apellidos y nombres)</label>
         <input id="q" placeholder="Ej: 73451234 / García López..." />
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+        <div class="filters-grid">
           <select id="sedeFilter">
             <option value="">Todas las sedes</option>
           </select>
@@ -409,6 +60,7 @@
             <option value="">Todas las planillas</option>
           </select>
         </div>
+
         <div style="display:flex; justify-content:flex-end; margin-top:8px;">
           <select id="limit" style="width:80px;">
             <option value="15">15</option>
@@ -425,7 +77,7 @@
         <div class="toast" id="toast"></div>
       </section>
 
-      <!-- Confirmar + Historial -->
+      <!-- Confirmar entrega + Historial -->
       <section class="card">
         <div class="cardhead">
           <h2>Confirmar entrega</h2>
@@ -433,9 +85,11 @@
         </div>
 
         <div id="selectedPill" class="pill" style="display:none"></div>
-        <div id="selectedHint" style="font-size:12px; color:var(--muted); margin-top:6px;">Selecciona una persona.</div>
+        <div id="selectedHint" style="font-size:12px; color:var(--muted); margin-top:6px;">
+          Selecciona una persona.
+        </div>
 
-        <label style="margin-top:14px;">Ítem</label>
+        <label for="item" style="margin-top:14px;">Ítem</label>
         <input id="item" placeholder="Ej: Código de entrega" disabled />
 
         <label style="margin-top:10px;">Firma del receptor</label>
@@ -443,7 +97,9 @@
           <canvas id="sigCanvas"></canvas>
           <span class="sig-hint" id="sigHint">Firme aquí</span>
           <div class="sig-actions">
-            <button class="btn" id="btnClearSig" style="padding:4px 10px; font-size:11px;">Borrar firma</button>
+            <button class="btn" id="btnClearSig" style="padding:4px 10px; font-size:11px;">
+              Borrar firma
+            </button>
           </div>
         </div>
 
@@ -470,42 +126,55 @@
           </table>
         </div>
       </section>
-    </div>
-  </div><!-- /.wrap -->
 
-  <!-- ── Modal: Cargar Plantilla ── -->
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════
+       MODAL: Cargar Plantilla
+  ══════════════════════════════════ -->
   <div id="modalUpload" class="modal-overlay">
     <div class="modal-box">
+
       <div class="modal-head">
         <h2>Cargar nueva plantilla</h2>
         <button class="btn" id="btnCloseModal" style="padding:6px 10px;">&#10005;</button>
       </div>
 
-      <!-- Paso 1: Archivo -->
+      <!-- Paso 1 -->
       <div style="margin-bottom:16px;">
-        <label style="margin-bottom:0;"><span class="step-num">1</span>Selecciona el archivo</label>
+        <label style="margin-bottom:0;">
+          <span class="step-num">1</span>Selecciona el archivo
+        </label>
         <div class="upload-drop" id="uploadDrop">
           <input type="file" id="fileInput" accept=".xlsx,.xls,.json" />
           <div class="di">&#128194;</div>
           <strong>Arrastra un archivo aquí</strong>
-          <p>o <span id="browseLink" style="color:var(--accent); cursor:pointer; text-decoration:underline;">busca en tu equipo</span></p>
-          <p style="margin-top:4px; font-size:11px;">Formatos aceptados: .xlsx &middot; .xls &middot; .json</p>
+          <p>
+            o <span id="browseLink" style="color:var(--blue); cursor:pointer; text-decoration:underline;">
+              busca en tu equipo
+            </span>
+          </p>
+          <p style="margin-top:4px; font-size:11px;">
+            Formatos aceptados: .xlsx &middot; .xls &middot; .json
+          </p>
         </div>
         <div id="fileNameBadge" style="display:none; margin-top:8px; font-size:12px; color:var(--muted);"></div>
       </div>
 
-      <!-- Paso 2: Nodo destino -->
+      <!-- Paso 2 -->
       <div style="margin-bottom:16px;">
-        <label><span class="step-num">2</span>Nombre del nodo en Firebase</label>
+        <label><span class="step-num">2</span>Nombre de tabla a importar</label>
         <input id="nodeNameInput" value="Personal" placeholder="Ej: Personal, Materiales, Herramientas" />
         <p style="font-size:11px; color:var(--muted); margin:5px 0 0;">
           Los datos se guardarán en <b>/<span id="nodeNamePreview">Personal</span></b>
         </p>
       </div>
 
-      <!-- Paso 3: Vista previa -->
+      <!-- Paso 3 -->
       <div id="previewSection" style="display:none; margin-bottom:16px;">
-        <label style="margin-bottom:0;"><span class="step-num">3</span>Vista previa
+        <label style="margin-bottom:0;">
+          <span class="step-num">3</span>Vista previa
           <span id="previewMeta" style="font-weight:400; color:var(--muted);"></span>
         </label>
         <div class="preview-wrap">
@@ -532,10 +201,13 @@
         <button class="btn"         id="btnCancelUpload">Cancelar</button>
       </div>
       <div class="upload-status" id="uploadStatus"></div>
+
     </div>
   </div>
 
-  <!-- ── Modal: Ver Firma ── -->
+  <!-- ══════════════════════════════════
+       MODAL: Ver Firma
+  ══════════════════════════════════ -->
   <div id="modalFirma" class="modal-overlay">
     <div class="modal-sig-box">
       <div class="modal-head">
@@ -549,718 +221,22 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
   <footer>
-    <span>&copy; 2026 Calidad de Vida &mdash; Direcci&oacute;n de Desarrollo Humano y Organizacional. Todos los derechos reservados.</span>
+    <span>
+      &copy; 2026 Calidad de Vida &mdash;
+      Direcci&oacute;n de Desarrollo Humano y Organizacional.
+      Todos los derechos reservados.
+    </span>
   </footer>
 
-  <!-- SheetJS (XLSX) -->
+  <!-- Dependencias externas -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  <!-- Lógica de la aplicación -->
+  <script type="module" src="app.js"></script>
 
-     const firebaseConfig = {
-      apiKey: "AIzaSyBS6Wia1ZPWO0Ontk-m2hu7yOAP13cHjIc",
-      authDomain: "entrega-cumple.firebaseapp.com",
-      databaseURL: "https://entrega-cumple-default-rtdb.firebaseio.com",
-      projectId: "entrega-cumple",
-      storageBucket: "entrega-cumple.firebasestorage.app",
-      messagingSenderId: "169986916222",
-      appId: "1:169986916222:web:f632e82225c59e8659fd2f"
-  };
-
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
-
-    // ── UI refs ──
-    const peopleMeta    = document.getElementById('peopleMeta');
-    const delMeta       = document.getElementById('delMeta');
-    const q             = document.getElementById('q');
-    const sedeFilter    = document.getElementById('sedeFilter');
-    const planillaFilter = document.getElementById('planillaFilter');
-    const limitSel      = document.getElementById('limit');
-    const results       = document.getElementById('results');
-    const toast         = document.getElementById('toast');
-    const selectedPill  = document.getElementById('selectedPill');
-    const selectedHint  = document.getElementById('selectedHint');
-    const item          = document.getElementById('item');
-    const btnConfirm    = document.getElementById('btnConfirm');
-    const btnClearSel   = document.getElementById('btnClearSel');
-    const hist          = document.getElementById('hist');
-    const btnReload     = document.getElementById('btnReload');
-    const btnExportXlsx = document.getElementById('btnExportXlsx');
-
-    // ── Helpers ──
-    const norm = (s) => (s ?? "").toString().trim().toLowerCase();
-
-    function showToast(msg, ms = 2600) {
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => toast.style.display = 'none', ms);
-    }
-
-    function escapeHtml(s) {
-      return (s ?? "").toString()
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
-    }
-
-    function formatLocal(iso) { return new Date(iso).toLocaleString(); }
-
-    // ── Data ──
-    let people     = [];
-    let entregas   = {};
-    let selected   = null;
-    let confirming = false;
-
-    function normalizePerson(dni, obj) {
-      return {
-        dni:              (dni ?? "").toString().trim(),
-        apellidos_nombres:(obj?.APELLIDOS_NOMBRES ?? obj?.apellidos_nombres ?? obj?.Apellidos_Nombres ?? "").toString().trim(),
-        planilla:         (obj?.PLANILLA ?? obj?.planilla ?? obj?.Planilla ?? "").toString().trim(),
-        sexo:             (obj?.SEXO ?? obj?.sexo ?? obj?.Sexo ?? "").toString().trim(),
-        tallas:           (obj?.TALLAS ?? obj?.tallas ?? obj?.Tallas ?? "").toString().trim(),
-        sede:             (obj?.SEDE ?? obj?.sede ?? obj?.Sede ?? "").toString().trim(),
-      };
-    }
-
-    function refreshSedeFilter() {
-      const set_ = new Set(people.map(p => p.sede).filter(Boolean));
-      const arr = Array.from(set_).sort((a, b) => a.localeCompare(b));
-      sedeFilter.innerHTML = `<option value="">Todas las sedes</option>` +
-        arr.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
-    }
-
-    function refreshPlanillaFilter() {
-      const set_ = new Set(people.map(p => p.planilla).filter(Boolean));
-      const arr = Array.from(set_).sort((a, b) => a.localeCompare(b));
-      planillaFilter.innerHTML = `<option value="">Todas las planillas</option>` +
-        arr.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
-    }
-
-    function isDelivered(dni) { return !!entregas?.[dni]?.entregado; }
-
-    function refreshMeta() {
-      const pendientes = people.filter(p => !isDelivered(p.dni)).length;
-      peopleMeta.textContent = `${pendientes} pendientes`;
-      delMeta.textContent = `${Object.keys(entregas || {}).filter(d => entregas[d]?.entregado).length} entregas`;
-    }
-
-    function setSelected(p) {
-      selected = p || null;
-      if (!selected) {
-        selectedPill.style.display = 'none';
-        selectedHint.textContent = 'Selecciona una persona.';
-        item.value = "";
-        item.disabled = true;
-        btnConfirm.disabled = true;
-        btnClearSel.disabled = true;
-        return;
-      }
-      selectedPill.style.display = 'flex';
-      selectedHint.textContent = 'Agrega ítem y confirma.';
-      selectedPill.innerHTML = `
-        <span class="chip">DNI</span> <b>${escapeHtml(selected.dni)}</b>
-        <span class="chip">NOMBRE</span> <b>${escapeHtml(selected.apellidos_nombres)}</b>
-        <span class="chip">PLANILLA</span> <b>${escapeHtml(selected.planilla)}</b>
-        <span class="chip">SEDE</span> <b>${escapeHtml(selected.sede)}</b>
-        <span class="chip">TALLA</span> <b>${escapeHtml(selected.tallas)}</b>
-      `;
-      item.disabled = false;
-      btnConfirm.disabled = false;
-      btnClearSel.disabled = false;
-      item.focus();
-    }
-
-    function applyFilters(source) {
-      const qq   = norm(q.value);
-      const sede = sedeFilter.value;
-      const plan = planillaFilter.value;
-      const lim  = parseInt(limitSel.value, 10);
-
-      let arr = source.filter(p => !isDelivered(p.dni));
-      if (sede) arr = arr.filter(p => p.sede === sede);
-      if (plan) arr = arr.filter(p => p.planilla === plan);
-      if (qq)   arr = arr.filter(p => {
-        const hay = `${p.dni} ${p.apellidos_nombres}`.toLowerCase();
-        return hay.includes(qq);
-      });
-      return arr.slice(0, lim);
-    }
-
-    function searchPeople() {
-      const arr = applyFilters(people);
-
-      results.innerHTML = arr.map((p, idx) => `
-        <div class="rowitem">
-          <div class="who">
-            <strong>${escapeHtml(p.apellidos_nombres || "(sin nombre)")}</strong>
-            <span>${escapeHtml(p.planilla || "-")} &middot; Sede: ${escapeHtml(p.sede || "-")} &middot; Talla: ${escapeHtml(p.tallas || "-")}</span>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center">
-            <span class="mono">${escapeHtml(p.dni)}</span>
-            <button class="btn ok" data-pick="${idx}">Elegir</button>
-          </div>
-        </div>
-      `).join('');
-
-      results.querySelectorAll('button[data-pick]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const arr2 = applyFilters(people);
-          const idx  = parseInt(btn.getAttribute('data-pick'), 10);
-          setSelected(arr2[idx]);
-        });
-      });
-
-      refreshMeta();
-    }
-
-    function renderHistory() {
-      const mapPeople = new Map(people.map(p => [p.dni, p]));
-      const rows = Object.entries(entregas || {})
-        .filter(([, e]) => e && e.entregado)
-        .map(([dni, e]) => ({ dni, ...e }))
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-      hist.innerHTML = rows.map(e => {
-        const p       = mapPeople.get(e.dni);
-        const nombre  = p ? p.apellidos_nombres : "-";
-        const planilla = p ? p.planilla : "-";
-        const sede    = p ? p.sede : "-";
-        const tallas  = p ? p.tallas : "-";
-        return `
-          <tr>
-            <td class="mono">${escapeHtml(formatLocal(e.timestamp))}</td>
-            <td class="mono">${escapeHtml(e.dni)}</td>
-            <td>${escapeHtml(nombre)}</td>
-            <td>${escapeHtml(planilla)}</td>
-            <td>${escapeHtml(sede)}</td>
-            <td class="mono">${escapeHtml(tallas)}</td>
-            <td><b>${escapeHtml(e.item || "-")}</b></td>
-            <td style="white-space:nowrap; display:flex; gap:4px;">
-              ${e.firma ? `<button class="btn" data-firma="${escapeHtml(e.dni)}" title="Ver firma">✍</button>` : ''}
-              <button class="btn danger" data-undo="${escapeHtml(e.dni)}">Revertir</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      hist.querySelectorAll('button[data-firma]').forEach(b => {
-        b.addEventListener('click', () => {
-          const dni = b.getAttribute('data-firma');
-          const e   = entregas[dni];
-          const p   = mapPeople.get(dni);
-          openFirmaModal(e?.firma, p?.apellidos_nombres || dni);
-        });
-      });
-
-      hist.querySelectorAll('button[data-undo]').forEach(b => {
-        b.addEventListener('click', async () => {
-          const dni = b.getAttribute('data-undo');
-          if (!confirm(`¿Volver a pendiente al DNI ${dni}?`)) return;
-          try {
-            await remove(ref(db, `Entregas/${dni}`));
-            showToast("Revertido a pendiente.");
-          } catch (err) {
-            console.error(err);
-            showToast("Error al revertir.");
-          }
-        });
-      });
-
-      refreshMeta();
-    }
-
-    // ── Confirmar entrega ──
-    btnConfirm.addEventListener('click', async () => {
-      if (confirming) return;
-      if (!selected) return showToast("Selecciona una persona.");
-      confirming = true;
-      btnConfirm.disabled = true;
-      const old = btnConfirm.textContent;
-      btnConfirm.textContent = "Confirmando...";
-      try {
-        const firmaCode = encodeStrokes();
-        await set(ref(db, `Entregas/${selected.dni}`), {
-          entregado: true,
-          timestamp: new Date().toISOString(),
-          item:  item.value.trim() || "",
-          firma: firmaCode || null,
-        });
-        item.value = "";
-        clearSigCanvas();
-        setSelected(null);
-        showToast("Entrega confirmada ✅");
-      } catch (err) {
-        console.error(err);
-        showToast("Error confirmando (revisa rules).");
-      } finally {
-        btnConfirm.textContent = old;
-        btnConfirm.disabled = false;
-        confirming = false;
-      }
-    });
-
-    btnClearSel.addEventListener('click', () => setSelected(null));
-
-    // ── Exportar Excel ──
-    function exportXlsx() {
-      const mapPeople  = new Map(people.map(p => [p.dni, p]));
-      const entregados = Object.entries(entregas || {})
-        .filter(([, e]) => e && e.entregado)
-        .map(([dni, e]) => {
-          const p = mapPeople.get(dni);
-          return {
-            DNI: dni,
-            "Apellidos y Nombres": p?.apellidos_nombres ?? "",
-            Planilla: p?.planilla ?? "",
-            Sexo:     p?.sexo ?? "",
-            Tallas:   p?.tallas ?? "",
-            Sede:     p?.sede ?? "",
-            "Ítem": e.item || "",
-            "Fecha ISO":   e.timestamp || "",
-            "Fecha local": e.timestamp ? formatLocal(e.timestamp) : ""
-          };
-        })
-        .sort((a, b) => (a["Fecha ISO"] || "").localeCompare(b["Fecha ISO"] || ""));
-
-      const pendientes = people
-        .filter(p => !isDelivered(p.dni))
-        .map(p => ({
-          DNI: p.dni,
-          "Apellidos y Nombres": p.apellidos_nombres,
-          Planilla: p.planilla,
-          Sexo:     p.sexo,
-          Tallas:   p.tallas,
-          Sede:     p.sede,
-        }))
-        .sort((a, b) => (a.Empresa || "").localeCompare(b.Empresa || "") || (a.DNI || "").localeCompare(b.DNI || ""));
-
-      if (!entregados.length && !pendientes.length) {
-        showToast("No hay datos para exportar.");
-        return;
-      }
-      const wb  = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(entregados), "Entregados");
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pendientes), "Pendientes");
-      XLSX.writeFile(wb, `Entrega_${new Date().toISOString().slice(0, 10)}.xlsx`);
-    }
-
-    // ════════════════════════════════════════════════
-    // ── Firma digital (canvas → strokes compactos) ──
-    // ════════════════════════════════════════════════
-
-    const sigCanvas  = document.getElementById('sigCanvas');
-    const sigCtx     = sigCanvas.getContext('2d');
-    const sigHint    = document.getElementById('sigHint');
-    const btnClearSig = document.getElementById('btnClearSig');
-
-    let sigStrokes = [];   // [[{x,y},...], ...]
-    let sigCurrent = null; // trazo en curso
-    let sigDrawing = false;
-
-    function resizeSigCanvas() {
-      const w = sigCanvas.offsetWidth;
-      const h = sigCanvas.offsetHeight;
-      const prev = exportSigImage();
-      sigCanvas.width  = w || 400;
-      sigCanvas.height = h || 130;
-      redrawSig();
-      if (prev) sigHint.style.display = 'none';
-    }
-
-    function getPos(e) {
-      const rect = sigCanvas.getBoundingClientRect();
-      const src  = e.touches ? e.touches[0] : e;
-      return {
-        x: Math.round(((src.clientX - rect.left) / rect.width)  * sigCanvas.width),
-        y: Math.round(((src.clientY - rect.top)  / rect.height) * sigCanvas.height)
-      };
-    }
-
-    function drawSigLine(x, y) {
-      sigCtx.lineWidth   = 2;
-      sigCtx.lineCap     = 'round';
-      sigCtx.lineJoin    = 'round';
-      sigCtx.strokeStyle = '#0f172a';
-      sigCtx.lineTo(x, y);
-      sigCtx.stroke();
-      sigCtx.beginPath();
-      sigCtx.moveTo(x, y);
-    }
-
-    function redrawSig() {
-      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-      for (const stroke of sigStrokes) {
-        if (!stroke.length) continue;
-        sigCtx.beginPath();
-        sigCtx.moveTo(stroke[0].x, stroke[0].y);
-        for (let i = 1; i < stroke.length; i++) drawSigLine(stroke[i].x, stroke[i].y);
-      }
-    }
-
-    function clearSigCanvas() {
-      sigStrokes = [];
-      sigCurrent = null;
-      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-      sigHint.style.display = '';
-    }
-
-    function exportSigImage() {
-      return sigStrokes.length ? sigCanvas.toDataURL('image/png') : null;
-    }
-
-    // ── Codificación compacta de trazos ──
-    // Formato: "x1,y1,x2,y2,...|x1,y1,..." normalizado a 0-999
-    function encodeStrokes() {
-      if (!sigStrokes.length) return '';
-      const W = sigCanvas.width  || 400;
-      const H = sigCanvas.height || 130;
-      return sigStrokes
-        .filter(s => s.length)
-        .map(s => s.map(p => `${Math.round((p.x / W) * 999)},${Math.round((p.y / H) * 999)}`).join(','))
-        .join('|');
-    }
-
-    // ── Reconstrucción desde código ──
-    function decodeAndDraw(code, canvas) {
-      if (!code) return;
-      const ctx = canvas.getContext('2d');
-      const W   = canvas.width;
-      const H   = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-      const strokes = code.split('|');
-      for (const stroke of strokes) {
-        const nums = stroke.split(',').map(Number);
-        if (nums.length < 2) continue;
-        ctx.beginPath();
-        ctx.lineWidth   = 2;
-        ctx.lineCap     = 'round';
-        ctx.lineJoin    = 'round';
-        ctx.strokeStyle = '#0f172a';
-        ctx.moveTo((nums[0] / 999) * W, (nums[1] / 999) * H);
-        for (let i = 2; i < nums.length - 1; i += 2) {
-          ctx.lineTo((nums[i] / 999) * W, (nums[i + 1] / 999) * H);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo((nums[i] / 999) * W, (nums[i + 1] / 999) * H);
-        }
-      }
-    }
-
-    // ── Eventos del canvas ──
-    sigCanvas.addEventListener('mousedown', e => {
-      sigDrawing = true;
-      const pos = getPos(e);
-      sigCurrent = [pos];
-      sigCtx.beginPath();
-      sigCtx.moveTo(pos.x, pos.y);
-      sigHint.style.display = 'none';
-    });
-    sigCanvas.addEventListener('mousemove', e => {
-      if (!sigDrawing) return;
-      const pos = getPos(e);
-      sigCurrent.push(pos);
-      drawSigLine(pos.x, pos.y);
-    });
-    sigCanvas.addEventListener('mouseup',  () => { if (sigDrawing && sigCurrent?.length) { sigStrokes.push(sigCurrent); sigCurrent = null; } sigDrawing = false; });
-    sigCanvas.addEventListener('mouseout', () => { if (sigDrawing && sigCurrent?.length) { sigStrokes.push(sigCurrent); sigCurrent = null; } sigDrawing = false; });
-
-    sigCanvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      sigDrawing = true;
-      const pos = getPos(e);
-      sigCurrent = [pos];
-      sigCtx.beginPath();
-      sigCtx.moveTo(pos.x, pos.y);
-      sigHint.style.display = 'none';
-    }, { passive: false });
-    sigCanvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (!sigDrawing) return;
-      const pos = getPos(e);
-      sigCurrent.push(pos);
-      drawSigLine(pos.x, pos.y);
-    }, { passive: false });
-    sigCanvas.addEventListener('touchend', () => {
-      if (sigDrawing && sigCurrent?.length) { sigStrokes.push(sigCurrent); sigCurrent = null; }
-      sigDrawing = false;
-    });
-
-    btnClearSig.addEventListener('click', clearSigCanvas);
-    window.addEventListener('resize', resizeSigCanvas);
-    setTimeout(resizeSigCanvas, 50);
-
-    // ── Modal Ver Firma ──
-    const modalFirma       = document.getElementById('modalFirma');
-    const modalFirmaTitulo = document.getElementById('modalFirmaTitulo');
-    const sigViewCanvas    = document.getElementById('sigViewCanvas');
-
-    function openFirmaModal(code, nombre) {
-      modalFirmaTitulo.textContent = `Firma de ${nombre}`;
-      modalFirma.classList.add('open');
-      setTimeout(() => {
-        sigViewCanvas.width  = sigViewCanvas.offsetWidth  || 440;
-        sigViewCanvas.height = sigViewCanvas.offsetHeight || 180;
-        decodeAndDraw(code, sigViewCanvas);
-      }, 30);
-    }
-
-    document.getElementById('btnCloseModalFirma').addEventListener('click',  () => modalFirma.classList.remove('open'));
-    document.getElementById('btnCloseModalFirma2').addEventListener('click', () => modalFirma.classList.remove('open'));
-    modalFirma.addEventListener('click', e => { if (e.target === modalFirma) modalFirma.classList.remove('open'); });
-
-    btnExportXlsx.addEventListener('click', exportXlsx);
-    q.addEventListener('input', searchPeople);
-    sedeFilter.addEventListener('change', searchPeople);
-    planillaFilter.addEventListener('change', searchPeople);
-    limitSel.addEventListener('change', searchPeople);
-    btnReload.addEventListener('click', () => location.reload());
-
-    // ── Firebase listeners ──
-    onValue(ref(db, "Personal"), (snap) => {
-      const val = snap.val() || {};
-      people = Object.entries(val).map(([dni, obj]) => normalizePerson(dni, obj));
-      refreshSedeFilter();
-      refreshPlanillaFilter();
-      refreshMeta();
-      searchPeople();
-      renderHistory();
-    }, (err) => {
-      console.error("Error leyendo Personal:", err);
-      showToast("Error leyendo Personal: " + (err?.code || ""));
-    });
-
-    onValue(ref(db, "Entregas"), (snap) => {
-      entregas = snap.val() || {};
-      refreshMeta();
-      searchPeople();
-      renderHistory();
-    }, (err) => {
-      console.error("Error leyendo Entregas:", err);
-      showToast("Error leyendo Entregas: " + (err?.code || ""));
-    });
-
-    // ════════════════════════════════════════════════
-    // ── Modal: Cargar Plantilla ──
-    // ════════════════════════════════════════════════
-    let parsedUploadData = null;
-
-    const modalUpload      = document.getElementById('modalUpload');
-    const btnOpenUpload    = document.getElementById('btnOpenUpload');
-    const btnCloseModal    = document.getElementById('btnCloseModal');
-    const btnCancelUpload  = document.getElementById('btnCancelUpload');
-    const fileInput        = document.getElementById('fileInput');
-    const uploadDrop       = document.getElementById('uploadDrop');
-    const browseLink       = document.getElementById('browseLink');
-    const fileNameBadge    = document.getElementById('fileNameBadge');
-    const nodeNameInput    = document.getElementById('nodeNameInput');
-    const nodeNamePreview  = document.getElementById('nodeNamePreview');
-    const previewSection   = document.getElementById('previewSection');
-    const previewMeta      = document.getElementById('previewMeta');
-    const previewHead      = document.getElementById('previewHead');
-    const previewBody      = document.getElementById('previewBody');
-    const uploadOptions    = document.getElementById('uploadOptions');
-    const clearEntregasOpt = document.getElementById('clearEntregasOpt');
-    const btnUpload        = document.getElementById('btnUpload');
-    const uploadStatus     = document.getElementById('uploadStatus');
-
-    function openModal()  { modalUpload.classList.add('open');    resetModal(); }
-    function closeModal() { modalUpload.classList.remove('open'); }
-
-    function resetModal() {
-      parsedUploadData = null;
-      fileInput.value  = '';
-      fileNameBadge.style.display   = 'none';
-      previewSection.style.display  = 'none';
-      uploadOptions.style.display   = 'none';
-      btnUpload.disabled            = true;
-      uploadStatus.textContent      = '';
-      clearEntregasOpt.checked      = false;
-    }
-
-    btnOpenUpload.addEventListener('click', openModal);
-    btnCloseModal.addEventListener('click', closeModal);
-    btnCancelUpload.addEventListener('click', closeModal);
-    modalUpload.addEventListener('click', (e) => { if (e.target === modalUpload) closeModal(); });
-
-    browseLink.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
-    uploadDrop.addEventListener('click', () => fileInput.click());
-
-    uploadDrop.addEventListener('dragover',  (e) => { e.preventDefault(); uploadDrop.classList.add('over'); });
-    uploadDrop.addEventListener('dragleave', ()  => uploadDrop.classList.remove('over'));
-    uploadDrop.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadDrop.classList.remove('over');
-      const file = e.dataTransfer.files[0];
-      if (file) processFile(file);
-    });
-
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files[0]) processFile(fileInput.files[0]);
-    });
-
-    nodeNameInput.addEventListener('input', () => {
-      nodeNamePreview.textContent = nodeNameInput.value.trim() || 'Personal';
-    });
-
-    // ── Mapeo flexible de columnas ──
-    function findCol(keys, ...opts) {
-      return keys.find(k => opts.some(o => k.trim().toUpperCase() === o.toUpperCase())) || '';
-    }
-
-    function rowsToPersons(rows) {
-      if (!rows.length) return [];
-      const keys    = Object.keys(rows[0]);
-      const dniCol  = findCol(keys, 'DNI', 'DOC', 'DOCUMENTO', 'N_DOC', 'NDOC', 'NRO_DOC', 'NRO DOC');
-      const nomCol  = findCol(keys, 'APELLIDOS_NOMBRES', 'Apellidos_Nombres', 'APELLIDOS Y NOMBRES', 'APELLIDOS NOMBRES', 'NOMBRE COMPLETO', 'NOMBRES Y APELLIDOS');
-      const planCol = findCol(keys, 'PLANILLA', 'Planilla', 'TIPO_PLANILLA', 'TIPO PLANILLA');
-      const sexoCol = findCol(keys, 'SEXO', 'Sexo', 'GENERO', 'GÉNERO');
-      const tallCol = findCol(keys, 'TALLAS', 'Tallas', 'TALLA', 'TALLA_POLO', 'POLO');
-      const sedeCol = findCol(keys, 'SEDE', 'Sede', 'AREA', 'ÁREA', 'OFICINA', 'LUGAR');
-
-      return rows
-        .map(r => ({
-          dni:              String(r[dniCol]  ?? '').trim(),
-          apellidos_nombres:String(r[nomCol]  ?? '').trim(),
-          planilla:         String(r[planCol] ?? '').trim(),
-          sexo:             String(r[sexoCol] ?? '').trim(),
-          tallas:           String(r[tallCol] ?? '').trim(),
-          sede:             String(r[sedeCol] ?? '').trim(),
-        }))
-        .filter(r => r.dni);
-    }
-
-    function parseJsonToPersons(text) {
-      const data = JSON.parse(text);
-
-      // Array de objetos planos
-      if (Array.isArray(data)) return rowsToPersons(data);
-
-      const topKeys = Object.keys(data);
-      if (!topKeys.length) return [];
-
-      const firstVal = data[topKeys[0]];
-      if (firstVal && typeof firstVal === 'object' && !Array.isArray(firstVal)) {
-        const innerKeys = Object.keys(firstVal);
-        if (innerKeys.length) {
-          const innerVal = firstVal[innerKeys[0]];
-          // Export Firebase: {"NombreNodo": {"DNI": {campos...}}}
-          if (innerVal && typeof innerVal === 'object' &&
-              (innerVal.APELLIDOS_NOMBRES || innerVal.apellidos_nombres || innerVal.SEDE || innerVal.PLANILLA)) {
-            return Object.entries(firstVal).map(([dni, obj]) => normalizePerson(dni, obj));
-          }
-        }
-        // Directo: {"DNI": {campos...}}
-        if (firstVal.APELLIDOS_NOMBRES || firstVal.apellidos_nombres || firstVal.SEDE || firstVal.PLANILLA) {
-          return Object.entries(data).map(([dni, obj]) => normalizePerson(dni, obj));
-        }
-      }
-      return [];
-    }
-
-    async function processFile(file) {
-      uploadStatus.textContent        = 'Procesando...';
-      fileNameBadge.style.display     = 'block';
-      fileNameBadge.textContent       = '\uD83D\uDCC4 ' + file.name;
-      parsedUploadData                = null;
-      btnUpload.disabled              = true;
-      previewSection.style.display    = 'none';
-      uploadOptions.style.display     = 'none';
-
-      try {
-        let persons = [];
-        const ext   = file.name.split('.').pop().toLowerCase();
-
-        if (ext === 'json') {
-          const text = await file.text();
-          persons    = parseJsonToPersons(text);
-        } else {
-          const buffer = await file.arrayBuffer();
-          const wb     = XLSX.read(buffer, { type: 'array' });
-          const ws     = wb.Sheets[wb.SheetNames[0]];
-          const rows   = XLSX.utils.sheet_to_json(ws, { defval: '' });
-          persons      = rowsToPersons(rows);
-        }
-
-        if (!persons.length) {
-          uploadStatus.textContent = '⚠ No se encontraron registros. Verifica que el archivo tenga columnas: DNI, Apellidos_Nombres, Planilla, Sexo, Tallas, Sede.';
-          return;
-        }
-
-        parsedUploadData         = persons;
-        uploadStatus.textContent = '';
-        renderPreview(persons);
-
-      } catch (err) {
-        console.error(err);
-        uploadStatus.textContent = '\u26A0 Error al leer el archivo: ' + err.message;
-      }
-    }
-
-    function renderPreview(persons) {
-      const sample = persons.slice(0, 8);
-      previewHead.innerHTML = `<th>DNI</th><th>Apellidos y Nombres</th><th>Planilla</th><th>Sexo</th><th>Tallas</th><th>Sede</th>`;
-      previewBody.innerHTML = sample.map(p => `
-        <tr>
-          <td class="mono">${escapeHtml(p.dni)}</td>
-          <td>${escapeHtml(p.apellidos_nombres)}</td>
-          <td>${escapeHtml(p.planilla)}</td>
-          <td>${escapeHtml(p.sexo)}</td>
-          <td>${escapeHtml(p.tallas)}</td>
-          <td>${escapeHtml(p.sede)}</td>
-        </tr>
-      `).join('');
-
-      const total = persons.length;
-      previewMeta.textContent = `\u2014 ${total} registro${total !== 1 ? 's' : ''}${total > 8 ? ` (mostrando 8 de ${total})` : ''}`;
-      previewSection.style.display = 'block';
-      uploadOptions.style.display  = 'block';
-      btnUpload.disabled           = false;
-    }
-
-    btnUpload.addEventListener('click', async () => {
-      if (!parsedUploadData?.length) return;
-      const nodeName  = nodeNameInput.value.trim() || 'Personal';
-      const clearEntr = clearEntregasOpt.checked;
-
-      const msg = `¿Cargar ${parsedUploadData.length} registros en /${nodeName}?`
-        + (clearEntr ? '\n\nTambién se eliminarán TODAS las /Entregas.' : '');
-      if (!confirm(msg)) return;
-
-      btnUpload.disabled       = true;
-      uploadStatus.textContent = 'Cargando...';
-
-      try {
-        const obj = {};
-        for (const p of parsedUploadData) {
-          obj[p.dni] = {
-            APELLIDOS_NOMBRES: p.apellidos_nombres,
-            PLANILLA:          p.planilla,
-            SEXO:              p.sexo,
-            TALLAS:            p.tallas,
-            SEDE:              p.sede,
-          };
-        }
-
-        await set(ref(db, nodeName), obj);
-        if (clearEntr) await remove(ref(db, 'Entregas'));
-
-        uploadStatus.textContent = `\u2705 ${parsedUploadData.length} registros cargados en /${nodeName}.`;
-        showToast(`\u2705 Plantilla cargada: ${parsedUploadData.length} registros en /${nodeName}.`);
-        setTimeout(closeModal, 1800);
-
-      } catch (err) {
-        console.error(err);
-        uploadStatus.textContent = '\u26A0 Error al cargar: ' + (err.message || err.code || err);
-        btnUpload.disabled = false;
-      }
-    });
-
-  </script>
 </body>
 </html>
