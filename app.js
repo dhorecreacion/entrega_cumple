@@ -31,6 +31,7 @@ const btnCloseModalConfirm = document.getElementById('btnCloseModalConfirm');
 const btnConfirm     = document.getElementById('btnConfirm');
 const btnClearSel    = document.getElementById('btnClearSel');
 const hist           = document.getElementById('hist');
+const histQ          = document.getElementById('histQ');
 const btnReload      = document.getElementById('btnReload');
 const btnExportXlsx  = document.getElementById('btnExportXlsx');
 
@@ -189,10 +190,16 @@ function searchPeople() {
 
 function renderHistory() {
   const mapPeople = new Map(people.map(p => [p.dni, p]));
+  const term = (histQ?.value || '').toLowerCase().trim();
   const rows = Object.entries(entregas || {})
     .filter(([, e]) => e && e.entregado)
     .map(([dni, e]) => ({ dni, ...e }))
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .filter(e => {
+      if (!term) return true;
+      const p = mapPeople.get(e.dni);
+      return e.dni.includes(term) || (p?.apellidos_nombres || '').toLowerCase().includes(term);
+    });
 
   hist.innerHTML = rows.map(e => {
     const p       = mapPeople.get(e.dni);
@@ -778,6 +785,8 @@ onValue(ref(db, 'Personal'), snap => {
   console.error('Error leyendo Personal:', err);
   showToast('Error leyendo Personal: ' + (err?.code || ''));
 });
+
+histQ.addEventListener('input', renderHistory);
 
 onValue(ref(db, 'Entregas'), snap => {
   entregas = snap.val() || {};
