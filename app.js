@@ -258,6 +258,7 @@ function renderHistory() {
 btnConfirm.addEventListener('click', async () => {
   if (confirming) return;
   if (!selected) return showToast('Selecciona una persona.');
+  if (!sigStrokes.length) return showToast('La firma es obligatoria.');
   confirming = true;
   btnConfirm.disabled = true;
   const old = btnConfirm.textContent;
